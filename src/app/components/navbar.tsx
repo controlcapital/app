@@ -47,19 +47,17 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
           filter: `id=eq.${user.id}` 
         }, 
         (payload) => {
-          console.log('🔔 Realtime UPDATE:', payload.new)
+       
           setDbUserData({
             avatar: payload.new.avatar,
             fullname: payload.new.fullname
           })
         }
       )
-      .subscribe((status) => {
-        console.log('📡 Realtime status:', status)
-      })
+      
 
     const handleUserDataUpdate = (e: any) => {
-      console.log('⚡ Window event recibido:', e.detail)
+
       setDbUserData(prev => ({
         ...prev,
         avatar: e.detail.avatar,
@@ -79,7 +77,9 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
     if (pathname === '/dashboard') return 'dashboard'
     if (pathname?.startsWith('/income')) return 'ingresos'
     if (pathname?.startsWith('/expense')) return 'gastos'
+    if (pathname?.startsWith('/saving')) return 'ahorro'
     if (pathname === '/settings') return 'settings'
+    
     return activeMenuProp || 'home'
   }
 
@@ -119,36 +119,44 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
            style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
       
       {/* Logo */}
-      <div className="p-6 border-b" style={{ borderColor: colors.border }}>
-        <div className="flex items-center gap-3">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl"
-               style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none"
-                 style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
-              {/* Barras */}
+      <div className="p-3 border-b" style={{ borderColor: colors.border }}>
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="w-full flex items-center justify-center lg:justify-start gap-3 px-3 lg:px-4 py-2 rounded-2xl cursor-pointer transition-colors"
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.hoverBg}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl flex-shrink-0"
+              style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
+            <svg className="w-11 h-11" viewBox="0 0 24 29" fill="none"
+                style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
               <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"
-                    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              
+                    stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+              <text x="12" y="25" textAnchor="middle" fontSize="3" fontWeight="bold" fill="currentColor">
+                Control Capital
+              </text>
             </svg>
           </div>
-          <span className="font-bold text-xl hidden lg:block truncate transition-colors" 
-                style={{ color: colors.text }}>
+
+          <span className="font-bold text-xl hidden lg:block truncate transition-colors"
+                style={{ color: colors.text, fontSize: '19px'}}>
             Control Capital
           </span>
-        </div>
+        </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         {[
-          { id: 'dashboard', label: 'Dashboard', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', path: '/dashboard' },
+          { id: 'dashboard', label: 'Panel de control', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', path: '/dashboard' },
           { id: 'ingresos', label: 'Ingresos', icon: 'M7 11l5-5m0 0l5 5m-5-5v12', path: '/income' },
-          { id: 'gastos', label: 'Gastos', icon: 'M17 13l-5 5m0 0l-5-5m5 5V6', path: '/expense' }
+          { id: 'gastos', label: 'Gastos', icon: 'M17 13l-5 5m0 0l-5-5m5 5V6', path: '/expense' },
+          { id: 'ahorro', label: 'Ahorro', icon: 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z', path: '/saving'},
         ].map((item) => (
           <button
             key={item.id}
             onClick={() => router.push(item.path)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-200"
+            className="w-full flex items-center justify-center lg:justify-start gap-3 px-2 lg:px-4 py-3 rounded-2xl cursor-pointer transition-all duration-200"
             style={{
               backgroundColor: activeMenu === item.id ? colors.activeButtonBg : 'transparent',
               color: activeMenu === item.id ? colors.activeButtonText : colors.textSecondary,
@@ -166,9 +174,13 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
               }
             }}
           >
-            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-            </svg>
+            {(item as any).isEmoji ? (
+              <span className="w-6 h-6 flex items-center justify-center text-xl flex-shrink-0">{item.icon}</span>
+            ) : (
+              <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+              </svg>
+            )}
             <span className="font-medium hidden lg:block">{item.label}</span>
           </button>
         ))}
@@ -177,19 +189,34 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
       {/* User Profile */}
       <div className="p-4 border-t" style={{ borderColor: colors.border }}>
         <div className="relative">
-          <div className="w-full flex items-center gap-3 px-2 lg:px-4 py-3 rounded-2xl">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="w-full flex items-center justify-center lg:justify-start gap-3 px-2 lg:px-4 py-3 rounded-2xl cursor-pointer transition-colors"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.hoverBg
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+            >
             
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 overflow-hidden border"
-                 style={{ borderColor: colors.border }}>
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 border-2 relative"
+                style={{ 
+                  borderColor: colors.border,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: avatarUrl ? 'transparent' : 'linear-gradient(to bottom right, rgb(139, 92, 246), rgb(168, 85, 247))'
+                }}>
               {avatarUrl ? (
                 <img 
                   src={avatarUrl} 
                   alt="Avatar" 
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ borderRadius: '50%' }}
                   key={avatarUrl}
                 />
               ) : (
-                <span className="text-white text-xs font-bold">
+                <span className="text-white text-xs font-bold relative z-10">
                   {getInitials()}
                 </span>
               )}
@@ -204,29 +231,20 @@ export default function Navbar({ activeMenu: activeMenuProp, onMenuChange }: Nav
               </p>
             </div>
             
-            <button 
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg cursor-pointer transition-colors"
-              style={{ color: colors.textSecondary }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.hoverBg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
-            >
+            <div className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
+                style={{ color: colors.textSecondary }}>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
               </svg>
-            </button>
-          </div>
+            </div>
+          </button>
 
           {/* Dropdown Menu */}
           {showUserMenu && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-              <div className="absolute bottom-full left-4 right-4 mb-2 rounded-2xl shadow-xl border overflow-hidden z-50 transition-colors"
-                   style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
+            <div className="fixed inset-0 z-[60]" onClick={() => setShowUserMenu(false)} />
+              <div className="fixed bottom-22 left-12 w-40 rounded-2xl shadow-xl border overflow-hidden z-[70] transition-colors"
+                  style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
                 <button
                   onClick={() => { setShowUserMenu(false); router.push('/settings'); }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer transition-colors"

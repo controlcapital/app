@@ -13,84 +13,122 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
   const { theme } = useTheme()
+  const [rememberMe, setRememberMe] = useState(false)
+  
+  const traducirError = (msg: string) => {
+    const errores: { [key: string]: string } = {
+      // Registro
+      'User already registered':                    'Este usuario ya está registrado',
+      'Password should be at least 6 characters':   'La contraseña debe tener al menos 6 caracteres',
+      'Unable to validate email address: invalid format': 'El formato del correo no es válido',
+      'Signup requires a valid password':            'Introduce una contraseña válida',
+      'Database error saving new user': 'Error en la base de datos guardando un nuevo usuario',
+
+      // Login
+      'Invalid login credentials':                  'Correo o contraseña incorrectos',
+      'Email not confirmed':                         'Confirma tu correo antes de iniciar sesión',
+      'Too many requests':                           'Demasiados intentos, espera un momento',
+
+      // Contraseña
+      'New password should be different from the old password': 'La nueva contraseña debe ser diferente a la anterior',
+      'Password recovery requires an email':         'Introduce tu correo para recuperar la contraseña',
+
+      // General
+      'Network request failed':                      'Error de conexión, comprueba tu internet',
+      'Request timeout':                             'La solicitud tardó demasiado, inténtalo de nuevo',
+      'duplicate key value violates unique constraint "user_pkey"': 'El valor de clave duplicado viola la restricción de unicidad "user_pkey".'
+    }
+    return errores[msg] ?? msg
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage(null);
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+  
 
-  try {
-    if (isLogin) {
-      // --- LÓGICA DE LOGIN ---
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    try {
+      if (isLogin) {
+        // --- LÓGICA DE LOGIN ---
+   
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setMessage({ type: 'success', text: '¡Bienvenido de nuevo!' });
-      
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
-
-    } else {
-      // --- LÓGICA DE REGISTRO ---
-      
-      // 1. Validaciones de contraseña (solo en registro)
-      if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
-      if (!/[A-Z]/.test(password)) throw new Error('La contraseña debe tener al menos una mayúscula.');
-      if (!/[a-z]/.test(password)) throw new Error('La contraseña debe tener al menos una minúscula.');
-      if (!/[0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un número.');
-      if (!/[^A-Za-z0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un carácter especial.');
-
-      // 2. Registro en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: name,
-          }
-        }
-      });
-
-      if (authError) throw authError;
-
-      // 3. Insertar en tabla pública 'users' (Opcional, si no usas Triggers)
-      if (authData.user) {
-        const { error: dbError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: authData.user.id,
-              email: email,
-              fullname: name,
+        // Si NO marca Recordarme, convierte las cookies en cookies de sesión
+        if (!rememberMe) {
+          document.cookie.split(';').forEach(cookie => {
+            const name = cookie.split('=')[0].trim()
+            if (name.startsWith('sb-')) {
+              // Reescribe la cookie sin fecha de expiración = cookie de sesión
+              const value = decodeURIComponent(cookie.split('=')[1] || '')
+              document.cookie = `${name}=${value}; path=/; SameSite=Lax`
             }
-          ]);
+          })
+        }
 
-        if (dbError) throw dbError;
+        setMessage({ type: 'success', text: '¡Bienvenido de nuevo!' });
+        
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
+
+      } else {
+        // --- LÓGICA DE REGISTRO ---
+        
+        // 1. Validaciones de contraseña (solo en registro)
+        if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
+        if (!/[A-Z]/.test(password)) throw new Error('La contraseña debe tener al menos una mayúscula.');
+        if (!/[a-z]/.test(password)) throw new Error('La contraseña debe tener al menos una minúscula.');
+        if (!/[0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un número.');
+        if (!/[^A-Za-z0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un carácter especial.');
+
+        // 2. Registro en Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+            }
+          }
+        });
+
+        if (authError) throw authError;
+
+        // 3. Insertar en tabla pública 'users' (Opcional, si no usas Triggers)
+        // if (authData.user) {
+        //   const { error: dbError } = await supabase
+        //     .from('users')
+        //     .insert([
+        //       {
+        //         id: authData.user.id,
+        //         email: email,
+        //         fullname: name,
+        //       }
+        //     ]);
+
+        //   if (dbError) throw dbError;
+        // }
+
+        setMessage({ 
+          type: 'success', 
+          text: '¡Cuenta creada! Revisa tu email para confirmar.' 
+        });
+        
+        setName('');
+        setEmail('');
+        setPassword('');
       }
-
+    } catch (error: any) {
       setMessage({ 
-        type: 'success', 
-        text: '¡Cuenta creada! Revisa tu email para confirmar.' 
+        type: 'error', 
+        text: traducirError(error.message) || 'Ocurrió un error. Intenta de nuevo.' 
       });
-      
-      setName('');
-      setEmail('');
-      setPassword('');
+    } finally {
+      setLoading(false);
     }
-  } catch (error: any) {
-    setMessage({ 
-      type: 'error', 
-      text: error.message || 'Ocurrió un error. Intenta de nuevo.' 
-    });
-  } finally {
-    setLoading(false);
   }
-}
 
   const handleGoogleLogin = async () => {
     try {
@@ -108,7 +146,7 @@ export default function Login() {
       
       if (error) throw error
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message })
+      setMessage({ type: 'error', text: traducirError(error.message) })
       setLoading(false)
     }
   }
@@ -150,14 +188,21 @@ export default function Login() {
         
         {/* Logo y título */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-               style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
-            <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none"
-                 style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
-              <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"
-                    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          
+          <div className="flex flex-col items-center mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl"
+                style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
+              <svg className="w-11 h-11" viewBox="0 0 24 29" fill="none"
+                  style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
+                <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"
+                      stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="12" y="25" textAnchor="middle" fontSize="3" fontWeight="bold" fill="currentColor">
+                  Control Capital
+                </text>
+              </svg>
+            </div>
           </div>
+
           <h1 className="text-4xl font-bold mb-2 transition-colors" style={{ color: colors.text }}>
             Control Capital
           </h1>
@@ -207,7 +252,7 @@ export default function Login() {
           {message && (
               <div className={`mb-6 p-4 rounded-2xl border text-center ${
                 message.type === 'error'
-                  ? 'bg-red-950/50 border-red-900 text-red-200'
+                  ? 'bg-red-500/10 border-red-500 text-red-400'
                   : 'bg-green-500/10 border-green-500 text-green-400'
               }`}>
                 <p className="text-sm">{message.text}</p>
@@ -236,7 +281,7 @@ export default function Login() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Juan Pérez"
-                    className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     required={!isLogin}
                     disabled={loading}
@@ -263,7 +308,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
-                  className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                  className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   required
                 />
@@ -288,7 +333,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                  className="w-full pl-12 pr-12 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   required
                 />
@@ -330,7 +375,9 @@ export default function Login() {
                 <label className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-zinc-700 bg-black text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-zinc-700 bg-black text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
                     disabled={loading}
                   />
                   <span className="text-sm transition-colors" style={{ color: colors.textSecondary }}>
@@ -339,7 +386,7 @@ export default function Login() {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-sm text-blue-500 hover:text-blue-400 transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -383,13 +430,12 @@ export default function Login() {
           </div>
 
           {/* Botones sociales */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex justify-center"> {/* PARA PONER EL DE APPLE CAMBIAR POR 'grid grid-cols-2 gap-3' Y QUITAR 'PX-8' DEL BOTON DE GOOGLE*/}
             <button type="button"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-            >
+              className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-8"
+              style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}>
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -399,16 +445,15 @@ export default function Login() {
               <span className="font-medium">Google</span>
             </button>
             
-            <button 
+            {/*<button
               disabled={loading}
               className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-            >
+              style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}>
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.957 4.45z"/>
               </svg>
               <span className="font-medium">Apple</span>
-            </button>
+            </button>*/}
           </div>
         </div>
       </div>

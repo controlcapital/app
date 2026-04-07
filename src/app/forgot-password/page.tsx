@@ -55,16 +55,20 @@ export default function ForgotPassword() {
 
         {/* Logo y título */}
         <div className="text-center mb-8">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-            style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}
-          >
-            <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none"
-                 style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
-              <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"
-                    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <div className="flex flex-col items-center mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl"
+                style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
+              <svg className="w-11 h-11" viewBox="0 0 24 29" fill="none"
+                  style={{ color: theme === 'light' ? '#ffffff' : '#000000' }}>
+                <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"
+                      stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                <text x="12" y="25" textAnchor="middle" fontSize="3" fontWeight="bold" fill="currentColor">
+                  Control Capital
+                </text>
+              </svg>
+            </div>
           </div>
+          
           <h1 className="text-4xl font-bold mb-2 transition-colors" style={{ color: colors.text }}>
             Control Capital
           </h1>
@@ -177,7 +181,7 @@ export default function ForgotPassword() {
               </p>
               <button
                 onClick={() => { setSent(false); setEmail(''); setMessage(null) }}
-                className="text-sm text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
               >
                 Enviar de nuevo
               </button>

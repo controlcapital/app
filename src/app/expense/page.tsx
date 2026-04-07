@@ -15,12 +15,16 @@ const CATEGORIAS: { [key: string]: { label: string, emoji: string, color: string
   suscripciones: { label: 'Suscripciones', emoji: '📱', color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20' },
   transporte:    { label: 'Transporte', emoji: '🚗', color: 'text-pink-400',   bg: 'bg-pink-500/10',   border: 'border-pink-500/20' },
   salud:         { label: 'Salud', emoji: '❤️', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  deporte:       { label: 'Deporte', emoji: '🏋️', color: 'text-lime-400',   bg: 'bg-lime-500/10',   border: 'border-lime-500/20' },
+  mascotas:      { label: 'Mascotas', emoji: '🐾', color: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20' },
+  moda:          { label: 'Moda', emoji: '👚', color: 'text-rose-400',   bg: 'bg-rose-500/10',   border: 'border-rose-500/20' },
+  estetica:      { label: 'Estética', emoji: '💇🏻‍♂️', color: 'text-fuchsia-400', bg: 'bg-fuchsia-500/10', border: 'border-fuchsia-500/20' },
   otro:          { label: 'Otro', emoji: '📦', color: 'text-gray-400',   bg: 'bg-gray-500/10',   border: 'border-gray-500/20' },
 }
 
 const ICON_COLORS: { [key: string]: string } = {
   vivienda:     'from-blue-500 to-blue-600',
-  suministros:  'from-purple-500 to-violet-600',
+  suministros:  'from-purple-500 to-blue-600',
   alimentacion: 'from-green-500 to-emerald-600',
   ocio:         'from-orange-500 to-amber-600',
   suscripciones:'from-cyan-500 to-teal-600',
@@ -212,7 +216,7 @@ export default function ExpenseTable() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -226,15 +230,15 @@ export default function ExpenseTable() {
       
       <Navbar />
 
-      <main className="flex-1 ml-20 lg:ml-64">
-        <div className="p-4 md:p-6">
+      <main className="flex-1 ml-20 lg:ml-64 overflow-hidden">
+        <div className="p-3 md:p-6">
           <div className="max-w-7xl mx-auto">
             
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h1 className="text-4xl font-bold mb-2" style={{ color: colors.text }}>
+                  <h1 className="text-2xl md:text-4xl font-bold mb-2" style={{ color: colors.text }}>
                     Gastos
                   </h1>
                   <p className="text-sm" style={{ color: colors.textSecondary }}>
@@ -429,65 +433,59 @@ export default function ExpenseTable() {
 
                   return (
                     <div key={expense.id} 
-                         className="relative rounded-3xl p-5 border transition-all duration-200 group"
-                         style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
+                      className="relative rounded-3xl p-4 border transition-all duration-200 group "
+                      style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${iconColor} flex items-center justify-center flex-shrink-0 text-xl`}>
                           {cat.emoji}
                         </div>
-                        
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-semibold text-lg truncate" style={{ color: colors.text }}>
+                            <h3 className="font-semibold text-base md:text-lg line-clamp-1 max-w-[50%]" style={{ color: colors.text }}>
                               {expense.description}
                             </h3>
-                            <p className="font-bold text-xl ml-4 flex-shrink-0" style={{ color: colors.text }}>
+                            <p className="font-bold text-base md:text-xl ml-2 md:ml-4 flex-shrink-0" style={{ color: colors.text }}>
                               {formatEuro(expense.amount)}
                             </p>
                           </div>
-                          <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center justify-between flex-wrap gap-1 md:gap-2">
                             <div className="flex items-center gap-2">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${cat.bg} ${cat.color} border ${cat.border}`}>
                                 {cat.label}
                               </span>
                             </div>
-                            <span className="text-sm" style={{ color: colors.textSecondary }}>
+                            <span className="text-xs md:text-sm" style={{ color: colors.textSecondary }}>
                               {formatFecha(expense.date)}
                             </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Botones flotantes al hover */}
-                      <div className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-full hidden md:flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
-                        <button
-                          onClick={() => router.push(`/expense/edit/${expense.id}`)}
-                          className="w-12 h-11 rounded-2xl border transition-all duration-200 flex items-center justify-center group/btn shadow-lg cursor-pointer"
-                          style={{ 
-                            backgroundColor: colors.bgCard, 
-                            borderColor: colors.border 
-                          }}
-                          title="Editar"
-                        >
-                          <svg className="w-5 h-5 transition-colors" 
-                               style={{ color: colors.textSecondary }}
-                               fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(expense.id)}
-                          className="w-12 h-11 rounded-2xl border hover:bg-red-500/10 hover:border-red-900 transition-all duration-200 flex items-center justify-center group/btn shadow-lg cursor-pointer"
-                          style={{ 
-                            backgroundColor: colors.bgCard, 
-                            borderColor: colors.border 
-                          }}
-                          title="Eliminar"
-                        >
-                          <svg className="w-5 h-5 text-gray-400 group-hover/btn:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        {/* Botones */}
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => router.push(`/expense/edit/${expense.id}`)}
+                              className="w-8 h-7 rounded-xl border transition-all duration-200 flex items-center justify-center cursor-pointer"
+                              style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}
+                              title="Editar"
+                            >
+                              <svg className="w-4 h-4" style={{ color: colors.textSecondary }}
+                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDelete(expense.id)}
+                              className="w-8 h-7 rounded-xl border hover:bg-red-500/10 hover:border-red-900 transition-all duration-200 flex items-center justify-center cursor-pointer"
+                              style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}
+                              title="Eliminar"
+                            >
+                              <svg className="w-4 h-4 text-gray-400 hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )

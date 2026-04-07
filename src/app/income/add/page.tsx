@@ -5,6 +5,8 @@ import { supabase } from '@/app/lib/supabase'
 import { useUser } from '@/app/hooks/useUser'
 import Navbar from '@/app/components/navbar'
 import { useTheme } from '@/app/context/Theme.context'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 const CATEGORIAS = [
   { value: 'nomina', label: 'Nómina', emoji: '💼' },
@@ -80,7 +82,7 @@ export default function AddIncomePage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -108,10 +110,10 @@ export default function AddIncomePage() {
                 </svg>
               </button>
               <div>
-                <h1 className="text-4xl font-bold" style={{ color: colors.text }}>
+                <h1 className="text-2xl md:text-4xl font-bold" style={{ color: colors.text }}>
                   Añadir ingreso
                 </h1>
-                <p className="text-sm mt-1" style={{ color: colors.textSecondary }}>
+                <p className="text-xs md:text-base mt-1" style={{ color: colors.textSecondary }}>
                   Registra un nuevo ingreso
                 </p>
               </div>
@@ -144,7 +146,7 @@ export default function AddIncomePage() {
                     onChange={(e) => setDescripcion(e.target.value)}
                     placeholder="Ej: Salario mensual, Proyecto freelance..."
                     required
-                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   />
                 </div>
@@ -167,7 +169,7 @@ export default function AddIncomePage() {
                       step="0.01"
                       min="0"
                       required
-                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-colors"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     />
                   </div>
@@ -183,7 +185,7 @@ export default function AddIncomePage() {
                       value={categoria}
                       onChange={(e) => setCategoria(e.target.value)}
                       required
-                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
+                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     >
                       <option value="" disabled className="text-gray-500">
@@ -212,7 +214,7 @@ export default function AddIncomePage() {
                           onClick={() => setCategoria(cat.value)}
                           className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 border cursor-pointer ${
                             categoria === cat.value
-                              ? 'bg-violet-500/20 text-violet-400 border-violet-500/30'
+                              ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
                               : 'border'
                           }`}
                           style={categoria !== cat.value ? {
@@ -234,23 +236,27 @@ export default function AddIncomePage() {
                     Fecha
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                       <svg className="w-5 h-5" style={{ color: colors.textSecondary }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <input
-                      type="date"
-                      value={fecha}
-                      onChange={(e) => setFecha(e.target.value)}
+                    <DatePicker
+                      selected={fecha ? new Date(fecha) : null}
+                      onChange={(date: Date | null) => setFecha(date ? date.toISOString().split('T')[0] : '')}
+                      dateFormat="dd/MM/yyyy"
                       required
-                      className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
-                      style={{ 
-                        backgroundColor: colors.bgInput, 
-                        borderColor: colors.border, 
-                        color: colors.text,
-                        colorScheme: theme === 'light' ? 'light' : 'dark'
-                      }}
+                      wrapperClassName="w-full"
+                      customInput={
+                        <input
+                          className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                          style={{
+                            backgroundColor: colors.bgInput,
+                            borderColor: colors.border,
+                            color: colors.text,
+                          }}
+                        />
+                      }
                     />
                   </div>
                 </div>
@@ -260,7 +266,7 @@ export default function AddIncomePage() {
                   <button
                     type="button"
                     onClick={() => router.back()}
-                    className="flex-1 py-4 rounded-2xl font-semibold transition-colors cursor-pointer"
+                    className="flex-1 py-4 rounded-2xl font-semibold transition-colors cursor-pointer text-xs md:text-base"
                     style={{ backgroundColor: colors.buttonSecondary, color: colors.text }}
                   >
                     Cancelar
@@ -268,7 +274,7 @@ export default function AddIncomePage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-1 py-4 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
+                    className="flex-1 py-4 text-xs md:text-base rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
                     style={{
                       backgroundColor: theme === 'light' ? '#000000' : '#ffffff',
                       color: theme === 'light' ? '#ffffff' : '#000000'

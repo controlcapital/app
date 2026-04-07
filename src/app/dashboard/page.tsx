@@ -143,7 +143,7 @@ export default function DashboardPage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
           style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -192,11 +192,12 @@ export default function DashboardPage() {
   }
 
   return (
+    
     <div className="min-h-screen flex transition-colors duration-300" style={{ backgroundColor: colors.bg }}>
 
       <Navbar />
 
-      <main className="flex-1 ml-20 lg:ml-64">
+      <main className="flex-1 ml-20 lg:ml-64 overflow-hidden">
         <div className="p-4 md:p-6">
           <div className="max-w-7xl mx-auto">
 
@@ -207,7 +208,7 @@ export default function DashboardPage() {
                   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 })}
               </p>
-              <h1 className="text-4xl font-bold" style={{ color: colors.text }}>
+              <h1 className="text-2xl md:text-4xl font-bold" style={{ color: colors.text }}>
                 {getSaludo()}, {nombre} 👋
               </h1>
             </div>
@@ -305,13 +306,13 @@ export default function DashboardPage() {
                     Últimos 6 meses
                   </p>
                 </div>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm">
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500" />
                     <span style={{ color: colors.textSecondary }}>Ingresos</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500" />
                     <span style={{ color: colors.textSecondary }}>Gastos</span>
                   </div>
                 </div>
