@@ -445,6 +445,7 @@ export default function Login() {
               <span className="font-medium">Google</span>
             </button>
             
+            
             {/*<button
               disabled={loading}
               className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
@@ -455,6 +456,23 @@ export default function Login() {
               <span className="font-medium">Apple</span>
             </button>*/}
           </div>
+
+          {/* Política de Privacidad y Cookies */}
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <a href="https://www.iubenda.com/privacy-policy/37621247" target="_blank" rel="noopener noreferrer"
+              className="text-xs transition-colors hover:opacity-80"
+              style={{ color: colors.textSecondary }}>
+              Política de Privacidad
+            </a>
+            <span style={{ color: colors.border }}>·</span>
+            <a href="https://www.iubenda.com/privacy-policy/37621247/cookie-policy" target="_blank" rel="noopener noreferrer"
+              className="text-xs transition-colors hover:opacity-80"
+              style={{ color: colors.textSecondary }}>
+              Política de Cookies
+            </a>
+          </div>
+
+          
         </div>
       </div>
     </div>
