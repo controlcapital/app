@@ -43,3 +43,8 @@ body {
     --foreground: #ededed;
   }
 }
+
+#iubenda-cs-banner .iubenda-cs-close-btn,
+.iub-cs-activate-inline {
+  display: none !important;
+}
