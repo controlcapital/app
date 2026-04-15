@@ -41,6 +41,16 @@ export default function Login() {
     return errores[msg] ?? msg
   }
 
+  const DOMINIOS_PERMITIDOS = [
+    'gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com',
+    'icloud.com', 'protonmail.com', 'live.com', 'msn.com'
+  ]
+
+  const validarEmail = (email: string): boolean => {
+    const dominio = email.split('@')[1]?.toLowerCase()
+    return DOMINIOS_PERMITIDOS.includes(dominio)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -75,6 +85,12 @@ export default function Login() {
 
       } else {
         // --- LÓGICA DE REGISTRO ---
+
+        // 0. Validar dominio de email
+        if (!validarEmail(email)) {
+          throw new Error('Por favor usa un correo electrónico válido (Gmail, Hotmail, Outlook...).')
+        }
+        
         
         // 1. Validaciones de contraseña (solo en registro)
         if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
@@ -457,7 +473,7 @@ export default function Login() {
             </button>*/}
           </div>
 
-          {/* Política de Privacidad y Cookies */}
+          {/* Política de Privacidad y Cookies
           <div className="flex items-center justify-center gap-4 mt-6">
             <a href="https://www.iubenda.com/privacy-policy/37621247" target="_blank" rel="noopener noreferrer"
               className="text-xs transition-colors hover:opacity-80"
@@ -470,7 +486,7 @@ export default function Login() {
               style={{ color: colors.textSecondary }}>
               Política de Cookies
             </a>
-          </div>
+          </div> */}
 
           
         </div>
