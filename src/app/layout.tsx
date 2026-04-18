@@ -16,9 +16,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Control Capital",
-  description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
-  keywords: ["finanzas personales", "control de gastos", "app ahorro", "gestión dinero", "presupuesto personal"],
+  title: {
+    default: "Control Capital — Gestiona tus finanzas personales gratis",
+    template: "%s | Control Capital",
+  },
+  description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. App de finanzas personales gratuita y sin publicidad.",
+  keywords: [
+    "finanzas personales",
+    "control de gastos",
+    "app ahorro",
+    "gestión dinero",
+    "presupuesto personal",
+    "app finanzas gratis",
+    "controlar gastos mensuales",
+    "ahorrar dinero",
+    "gestión presupuesto",
+  ],
+  metadataBase: new URL("https://controlcapital.es"),
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  openGraph: {
+    title: "Control Capital — Gestiona tus finanzas personales gratis",
+    description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
+    url: "https://controlcapital.es",
+    siteName: "Control Capital",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Control Capital — Gestiona tus finanzas personales gratis",
+    description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
+  },
+  verification: {
+    google: "PEGA_AQUI_TU_CODIGO_DE_GOOGLE", // ← reemplaza esto con el código de Search Console
+  },
 };
 
 export default function RootLayout({
