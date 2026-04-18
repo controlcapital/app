@@ -35,29 +35,30 @@ export default async function Image() {
           }}
         />
 
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '48px' }}>
-          <div
-            style={{
-              width: '56px',
-              height: '56px',
-              background: '#ffffff',
-              borderRadius: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#09090b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"/>
+        {/* Logo oficial — icono + texto en fila */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '48px', gap: '14px' }}>
+        <div style={{
+            width: '48px',
+            height: '48px',
+            background: '#ffffff',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}>
+            <svg width="28" height="24" viewBox="0 0 24 21" fill="none" stroke="#09090b" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="20" x2="21" y2="20" />
+            <rect x="4" y="13" width="4" height="7" rx="0.5" />
+            <rect x="10" y="8" width="4" height="12" rx="0.5" />
+            <rect x="16" y="10" width="4" height="10" rx="0.5" />
             </svg>
-          </div>
-          <span style={{ color: '#ffffff', fontSize: '22px', fontWeight: '700' }}>
+        </div>
+        <span style={{ color: '#ffffff', fontSize: '24px', fontWeight: '700' }}>
             Control Capital
-          </span>
+        </span>
         </div>
 
-        {/* Titular — dos líneas separadas para evitar el bug de color en spans */}
+        {/* Titular */}
         <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '24px' }}>
           <span style={{ color: '#ffffff', fontSize: '72px', fontWeight: '800', letterSpacing: '-3px', lineHeight: '1.05' }}>
             Tus finanzas,

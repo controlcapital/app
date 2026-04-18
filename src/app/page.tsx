@@ -116,14 +116,9 @@ export default function Home() {
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 h-16 border-b border-zinc-200"
-           style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)' }}>
+          style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)' }}>
         <Link href="/" className="flex items-center gap-2 no-underline">
-          <div className="w-9 h-9 bg-zinc-900 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 20h18M5 20V14h3v6M10 20V9h3v11M15 20V11h3v9"/>
-            </svg>
-          </div>
-          <span className="font-bold text-base text-zinc-900">Control Capital</span>
+          <img src="/logo_negro-1.png" alt="Control Capital" height={36} style={{ height: '36px', width: 'auto' }} />
         </Link>
         <Link href="/login"
           className="bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity no-underline">
