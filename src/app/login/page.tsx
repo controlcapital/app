@@ -1,10 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/app/lib/supabase'
 import { useTheme } from '@/app/context/Theme.context'
 import Link from 'next/link'
 
 export default function Login() {
+  const searchParams = useSearchParams()
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,26 +16,26 @@ export default function Login() {
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
   const { theme } = useTheme()
   const [rememberMe, setRememberMe] = useState(false)
+
+  // Si la URL tiene ?tab=register, abre directamente el formulario de registro
+  useEffect(() => {
+    if (searchParams.get('tab') === 'register') {
+      setIsLogin(false)
+    }
+  }, [searchParams])
   
   const traducirError = (msg: string) => {
     const errores: { [key: string]: string } = {
-      // Registro
       'User already registered':                    'Este usuario ya está registrado',
       'Password should be at least 6 characters':   'La contraseña debe tener al menos 6 caracteres',
       'Unable to validate email address: invalid format': 'El formato del correo no es válido',
       'Signup requires a valid password':            'Introduce una contraseña válida',
       'Database error saving new user': 'Error en la base de datos guardando un nuevo usuario',
-
-      // Login
       'Invalid login credentials':                  'Correo o contraseña incorrectos',
       'Email not confirmed':                         'Confirma tu correo antes de iniciar sesión',
       'Too many requests':                           'Demasiados intentos, espera un momento',
-
-      // Contraseña
       'New password should be different from the old password': 'La nueva contraseña debe ser diferente a la anterior',
       'Password recovery requires an email':         'Introduce tu correo para recuperar la contraseña',
-
-      // General
       'Network request failed':                      'Error de conexión, comprueba tu internet',
       'Request timeout':                             'La solicitud tardó demasiado, inténtalo de nuevo',
       'duplicate key value violates unique constraint "user_pkey"': 'El valor de clave duplicado viola la restricción de unicidad "user_pkey".'
@@ -55,22 +57,16 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-  
 
     try {
       if (isLogin) {
-        // --- LÓGICA DE LOGIN ---
-   
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-
         if (error) throw error;
 
-        // Si NO marca Recordarme, convierte las cookies en cookies de sesión
         if (!rememberMe) {
           document.cookie.split(';').forEach(cookie => {
             const name = cookie.split('=')[0].trim()
             if (name.startsWith('sb-')) {
-              // Reescribe la cookie sin fecha de expiración = cookie de sesión
               const value = decodeURIComponent(cookie.split('=')[1] || '')
               document.cookie = `${name}=${value}; path=/; SameSite=Lax`
             }
@@ -78,63 +74,28 @@ export default function Login() {
         }
 
         setMessage({ type: 'success', text: '¡Bienvenido de nuevo!' });
-        
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 1000);
+        setTimeout(() => { window.location.href = '/dashboard'; }, 1000);
 
       } else {
-        // --- LÓGICA DE REGISTRO ---
-
-        // 0. Validar dominio de email
         if (!validarEmail(email)) {
           throw new Error('Por favor usa un correo electrónico válido (Gmail, Hotmail, Outlook...).')
         }
-        
-        
-        // 1. Validaciones de contraseña (solo en registro)
         if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
         if (!/[A-Z]/.test(password)) throw new Error('La contraseña debe tener al menos una mayúscula.');
         if (!/[a-z]/.test(password)) throw new Error('La contraseña debe tener al menos una minúscula.');
         if (!/[0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un número.');
         if (!/[^A-Za-z0-9]/.test(password)) throw new Error('La contraseña debe tener al menos un carácter especial.');
 
-        // 2. Registro en Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            data: {
-              full_name: name,
-            }
-          }
+          options: { data: { full_name: name } }
         });
 
         if (authError) throw authError;
 
-        // 3. Insertar en tabla pública 'users' (Opcional, si no usas Triggers)
-        // if (authData.user) {
-        //   const { error: dbError } = await supabase
-        //     .from('users')
-        //     .insert([
-        //       {
-        //         id: authData.user.id,
-        //         email: email,
-        //         fullname: name,
-        //       }
-        //     ]);
-
-        //   if (dbError) throw dbError;
-        // }
-
-        setMessage({ 
-          type: 'success', 
-          text: '¡Cuenta creada! Revisa tu email para confirmar.' 
-        });
-        
-        setName('');
-        setEmail('');
-        setPassword('');
+        setMessage({ type: 'success', text: '¡Cuenta creada! Revisa tu email para confirmar.' });
+        setName(''); setEmail(''); setPassword('');
       }
     } catch (error: any) {
       setMessage({ 
@@ -153,13 +114,9 @@ export default function Login() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
+          queryParams: { access_type: 'offline', prompt: 'consent' }
         }
       })
-      
       if (error) throw error
     } catch (error: any) {
       setMessage({ type: 'error', text: traducirError(error.message) })
@@ -169,15 +126,12 @@ export default function Login() {
 
   const getPasswordStrength = (pwd: string) => {
     if (pwd.length === 0) return null
-
     const hasMinLength = pwd.length >= 8
     const hasUpper = /[A-Z]/.test(pwd)
     const hasLower = /[a-z]/.test(pwd)
     const hasNumber = /[0-9]/.test(pwd)
     const hasSpecial = /[^A-Za-z0-9]/.test(pwd)
-
     const score = [hasMinLength, hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length
-
     if (score <= 1) return { label: 'Muy débil', color: '#ef4444', width: '20%' }
     if (score === 2) return { label: 'Débil', color: '#f97316', width: '40%' }
     if (score === 3) return { label: 'Regular', color: '#eab308', width: '60%' }
@@ -187,7 +141,6 @@ export default function Login() {
 
   const strength = getPasswordStrength(password)
 
-  // Colores dinámicos
   const colors = {
     bg: theme === 'light' ? '#ffffff' : '#000000',
     bgCard: theme === 'light' ? '#f4f4f5' : '#18181b',
@@ -202,9 +155,7 @@ export default function Login() {
          style={{ backgroundColor: colors.bg }}>
       <div className="w-full max-w-md">
         
-        {/* Logo y título */}
         <div className="text-center mb-8">
-          
           <div className="flex flex-col items-center mb-4">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl"
                 style={{ backgroundColor: theme === 'light' ? '#000000' : '#ffffff' }}>
@@ -218,7 +169,6 @@ export default function Login() {
               </svg>
             </div>
           </div>
-
           <h1 className="text-4xl font-bold mb-2 transition-colors" style={{ color: colors.text }}>
             Control Capital
           </h1>
@@ -227,18 +177,13 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Card principal */}
         <div className="rounded-3xl p-8 border transition-colors"
              style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
           
-          {/* Toggle Login/Registro */}
           <div className="flex gap-2 mb-8 rounded-full p-1"
                style={{ backgroundColor: colors.bgInput }}>
             <button
-              onClick={() => {
-                setIsLogin(true)
-                setMessage(null)
-              }}
+              onClick={() => { setIsLogin(true); setMessage(null) }}
               disabled={loading}
               className="flex-1 py-3 rounded-full font-semibold transition-all duration-200 cursor-pointer"
               style={{
@@ -249,10 +194,7 @@ export default function Login() {
               Iniciar sesión
             </button>
             <button
-              onClick={() => {
-                setIsLogin(false)
-                setMessage(null)
-              }}
+              onClick={() => { setIsLogin(false); setMessage(null) }}
               disabled={loading}
               className="flex-1 py-3 rounded-full font-semibold transition-all duration-200 cursor-pointer"
               style={{
@@ -264,25 +206,21 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Mensaje de error/éxito */}
           {message && (
-              <div className={`mb-6 p-4 rounded-2xl border text-center ${
-                message.type === 'error'
-                  ? 'bg-red-500/10 border-red-500 text-red-400'
-                  : 'bg-green-500/10 border-green-500 text-green-400'
-              }`}>
-                <p className="text-sm">{message.text}</p>
-              </div>
-            )}
+            <div className={`mb-6 p-4 rounded-2xl border text-center ${
+              message.type === 'error'
+                ? 'bg-red-500/10 border-red-500 text-red-400'
+                : 'bg-green-500/10 border-green-500 text-green-400'
+            }`}>
+              <p className="text-sm">{message.text}</p>
+            </div>
+          )}
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Campo nombre (solo en registro) */}
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2"
-                       style={{ color: colors.textSecondary }}>
+                <label htmlFor="name" className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
                   Nombre completo
                 </label>
                 <div className="relative">
@@ -291,25 +229,17 @@ export default function Login() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
-                  <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                  <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)}
                     placeholder="Juan Pérez"
                     className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-                    required={!isLogin}
-                    disabled={loading}
-                  />
+                    required={!isLogin} disabled={loading} />
                 </div>
               </div>
             )}
 
-            {/* Campo email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2"
-                     style={{ color: colors.textSecondary }}>
+              <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
                 Correo electrónico
               </label>
               <div className="relative">
@@ -318,23 +248,16 @@ export default function Login() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                   </svg>
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
                   className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-                  required
-                />
+                  required />
               </div>
             </div>
 
-            {/* Campo contraseña */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2"
-                     style={{ color: colors.textSecondary }}>
+              <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
                 Contraseña
               </label>
               <div className="relative">
@@ -343,22 +266,14 @@ export default function Login() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                <input id="password" type={showPassword ? 'text' : 'password'} value={password}
+                  onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
                   className="w-full pl-12 pr-12 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center transition-colors cursor-pointer"
-                  style={{ color: colors.textSecondary }}
-                >
+                  style={{ color: colors.textSecondary }}>
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -371,54 +286,37 @@ export default function Login() {
                   )}
                 </button>
               </div>
-              {/* ✅ Barra de fortaleza — solo en registro */}
               {!isLogin && strength && (
                 <div className="mt-2">
                   <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.border }}>
                     <div className="h-full rounded-full transition-all duration-300"
                         style={{ width: strength.width, backgroundColor: strength.color }} />
                   </div>
-                  <p className="text-xs mt-1 text-right" style={{ color: strength.color }}>
-                    {strength.label}
-                  </p>
+                  <p className="text-xs mt-1 text-right" style={{ color: strength.color }}>{strength.label}</p>
                 </div>
               )}
             </div>
 
-            {/* Recordar / Olvidé contraseña (solo en login) */}
             {isLogin && (
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
+                  <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 rounded border-zinc-700 bg-black text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
-                    disabled={loading}
-                  />
-                  <span className="text-sm transition-colors" style={{ color: colors.textSecondary }}>
-                    Recordarme
-                  </span>
+                    disabled={loading} />
+                  <span className="text-sm transition-colors" style={{ color: colors.textSecondary }}>Recordarme</span>
                 </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-blue-500 hover:text-blue-400 transition-colors"
-                >
+                <Link href="/forgot-password" className="text-sm text-blue-500 hover:text-blue-400 transition-colors">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
             )}
 
-            {/* Botón submit */}
-            <button
-              type="submit"
-              disabled={loading}
+            <button type="submit" disabled={loading}
               className="w-full py-4 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 cursor-pointer"
               style={{
                 backgroundColor: theme === 'light' ? '#000000' : '#ffffff',
                 color: theme === 'light' ? '#ffffff' : '#000000'
-              }}
-            >
+              }}>
               {loading ? (
                 <>
                   <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -433,7 +331,6 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t" style={{ borderColor: colors.border }}></div>
@@ -445,11 +342,8 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Botones sociales */}
-          <div className="flex justify-center"> {/* PARA PONER EL DE APPLE CAMBIAR POR 'grid grid-cols-2 gap-3' Y QUITAR 'PX-8' DEL BOTON DE GOOGLE*/}
-            <button type="button"
-              onClick={handleGoogleLogin}
-              disabled={loading}
+          <div className="flex justify-center">
+            <button type="button" onClick={handleGoogleLogin} disabled={loading}
               className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-8"
               style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}>
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -460,17 +354,6 @@ export default function Login() {
               </svg>
               <span className="font-medium">Google</span>
             </button>
-            
-            
-            {/*<button
-              disabled={loading}
-              className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}>
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.957 4.45z"/>
-              </svg>
-              <span className="font-medium">Apple</span>
-            </button>*/}
           </div>
           
         </div>

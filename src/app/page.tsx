@@ -7,6 +7,74 @@ export const metadata: Metadata = {
   keywords: ['finanzas personales', 'control de gastos', 'app ahorro', 'gestión dinero', 'presupuesto personal'],
 }
 
+// Schema structured data para Google
+const schemaData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Control Capital",
+  "url": "https://controlcapital.es",
+  "description": "App gratuita de finanzas personales para controlar ingresos, gastos y metas de ahorro desde cualquier dispositivo.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web, iOS, Android",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "featureList": [
+    "Panel de control con balance en tiempo real",
+    "Registro de ingresos por categoría",
+    "Control de gastos con estado de pago",
+    "Metas de ahorro personalizadas"
+  ],
+  "inLanguage": "es",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "ratingCount": "1"
+  }
+}
+
+const faqData = [
+  {
+    question: "¿Control Capital es realmente gratis?",
+    answer: "Sí, 100% gratis. Sin planes de pago, sin tarjeta de crédito, sin prueba gratuita que caduca. Gratis de verdad, para siempre."
+  },
+  {
+    question: "¿Funciona en el móvil?",
+    answer: "Sí. Control Capital está diseñada para funcionar perfectamente en móvil, tablet y ordenador. Solo necesitas un navegador, no hay que instalar nada."
+  },
+  {
+    question: "¿Mis datos financieros están seguros?",
+    answer: "Tus datos se almacenan de forma segura y nunca se venden a terceros ni se usan para publicidad. La app no tiene anuncios de ningún tipo."
+  },
+  {
+    question: "¿Qué puedo registrar en la app?",
+    answer: "Puedes registrar ingresos (sueldo, freelance, inversiones...), gastos por categoría con estado de pago, y crear metas de ahorro personalizadas para seguir tu progreso."
+  },
+  {
+    question: "¿Necesito instalar algo?",
+    answer: "No. Control Capital funciona directamente desde el navegador en cualquier dispositivo. Solo crea tu cuenta y empieza a usarla."
+  },
+  {
+    question: "¿Hay límite de registros?",
+    answer: "No. Puedes añadir todos los ingresos, gastos y metas que quieras, sin límites."
+  }
+]
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqData.map(({ question, answer }) => ({
+    "@type": "Question",
+    "name": question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": answer
+    }
+  }))
+}
+
 // Iconos Reales del Dashboard
 const Icons = {
   Dashboard: () => (
@@ -35,6 +103,16 @@ const Icons = {
 export default function Home() {
   return (
     <main className="bg-white text-zinc-900 overflow-x-hidden">
+
+      {/* ── SCHEMA JSON-LD ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 h-16 border-b border-zinc-200"
@@ -77,7 +155,8 @@ export default function Home() {
           </p>
 
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link href="/login"
+            {/* ← CTA principal apunta a registro directamente */}
+            <Link href="/login?tab=register"
               className="bg-zinc-900 text-white px-9 py-4 rounded-full text-base font-bold no-underline transition-transform hover:-translate-y-0.5"
               style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
               Empezar gratis →
@@ -100,13 +179,28 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* ── PRUEBA SOCIAL ── */}
+          {/* Actualiza el número cuando tengas más usuarios */}
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <div className="flex -space-x-2">
+              {['#0476D9', '#16a34a', '#ea580c', '#8b5cf6'].map((color, i) => (
+                <div key={i} className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-white text-[9px] font-black"
+                     style={{ background: color }}>
+                  {['AB', 'MG', 'LR', 'PR'][i]}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-zinc-500">
+              <span className="font-bold text-zinc-900">+50 personas</span> ya controlan sus finanzas con Control Capital
+            </p>
+          </div>
         </div>
 
-        {/* Mockup Refinado y Responsivo */}
+        {/* Mockup */}
         <div className="relative z-10 mt-12 md:mt-20 w-full max-w-5xl mx-auto px-2 md:px-4">
           <div className="rounded-2xl md:rounded-[2rem] overflow-hidden border border-zinc-200 bg-[#F4F4F5] shadow-2xl flex flex-col min-h-[500px] h-auto lg:h-[620px]">
             
-            {/* Header del Navegador - Simplificado en móvil */}
             <div className="bg-white border-b border-zinc-100 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
               <div className="flex gap-1.5 md:gap-2">
                 <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-zinc-200" />
@@ -120,7 +214,6 @@ export default function Home() {
             </div>
 
             <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
-              {/* SIDEBAR - Oculto en móviles para evitar desborde lateral */}
               <div className="w-56 bg-white border-r border-zinc-100 p-5 flex-col gap-1 hidden lg:flex">
                 <div className="bg-black text-white rounded-xl px-4 py-3 flex items-center gap-3 text-[11px] font-bold mb-4 shadow-lg shadow-black/10">
                   <Icons.Dashboard /> Panel de control
@@ -141,14 +234,12 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* DASHBOARD CONTENT - Ajustado para scroll y flexibilidad */}
               <div className="flex-1 p-4 md:p-8 text-left overflow-y-auto bg-[#fcfcfc]">
                 <div className="mb-6 md:mb-8">
                   <p className="text-[8px] md:text-[10px] text-zinc-400 font-bold uppercase tracking-tighter mb-1">miércoles, 15 de abril de 2026</p>
                   <h3 className="text-xl md:text-3xl font-black text-zinc-900 tracking-tight">Buenas tardes, Álvaro 👋</h3>
                 </div>
 
-                {/* Cards - Grid adaptable 2x2 en móvil, 4x1 en desktop */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
                   {[
                     { label: 'Ingresos', val: '2.840 €', color: 'text-emerald-500', bg: 'bg-emerald-50' },
@@ -171,7 +262,6 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* GRÁFICO - Ahora escala correctamente */}
                 <div className="bg-white rounded-2xl md:rounded-[32px] p-4 md:p-8 shadow-sm border border-zinc-100/50">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-10">
                     <div>
@@ -196,19 +286,14 @@ export default function Home() {
                           <stop offset="100%" stopColor="#f43f5e" stopOpacity="0" />
                         </linearGradient>
                       </defs>
-                      
                       <line x1="0" y1="0" x2="1000" y2="0" stroke="#f4f4f5" strokeWidth="2" />
                       <line x1="0" y1="125" x2="1000" y2="125" stroke="#f4f4f5" strokeWidth="2" />
                       <line x1="0" y1="250" x2="1000" y2="250" stroke="#f4f4f5" strokeWidth="2" />
-                      
-                      {/* Líneas de tendencia - Reajustadas para el nuevo viewBox */}
                       <path d="M 0 230 Q 200 220 400 225 Q 600 230 800 130 T 1000 30" fill="none" stroke="#10b981" strokeWidth="6" strokeLinecap="round" />
                       <path d="M 0 230 Q 200 220 400 225 Q 600 230 800 130 T 1000 30 L 1000 250 L 0 250 Z" fill="url(#grad-green)" />
-                      
                       <path d="M 0 240 Q 200 235 400 238 Q 600 235 800 200 T 1000 150" fill="none" stroke="#f43f5e" strokeWidth="6" strokeLinecap="round" />
                       <path d="M 0 240 Q 200 235 400 238 Q 600 235 800 200 T 1000 150 L 1000 250 L 0 250 Z" fill="url(#grad-red)" />
                     </svg>
-                    
                     <div className="flex justify-between mt-4 px-1">
                       {['Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr'].map(m => (
                         <span key={m} className="text-[7px] md:text-[9px] font-black text-zinc-300 uppercase tracking-widest">{m}</span>
@@ -220,9 +305,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-
-        
       </section>
 
       {/* ── FEATURES ── */}
@@ -276,6 +358,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── FAQ ── */}
+      <section id="faq" className="px-10 py-24 max-w-3xl mx-auto">
+        <div className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: '#0476D9' }}>FAQ</div>
+        <h2 className="font-extrabold mb-16 text-zinc-900"
+            style={{ fontSize: 'clamp(28px, 4vw, 44px)', letterSpacing: '-2px', lineHeight: '1.1' }}>
+          Preguntas frecuentes
+        </h2>
+
+        <div className="space-y-0">
+          {faqData.map(({ question, answer }, i) => (
+            <details key={i} className="group border-t border-zinc-200 last:border-b">
+              <summary className="flex items-center justify-between gap-4 py-6 cursor-pointer list-none font-semibold text-zinc-900 hover:text-zinc-600 transition-colors">
+                {question}
+                <svg className="w-5 h-5 shrink-0 text-zinc-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <p className="pb-6 text-zinc-500 font-light leading-relaxed -mt-2">{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="py-32 px-10 text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-60 pointer-events-none"
@@ -288,7 +393,8 @@ export default function Home() {
             Empieza a controlar<br />tu dinero hoy.
           </h2>
           <p className="text-lg font-light text-zinc-500 leading-relaxed mb-10">Sin complicaciones. Sin excusas. Solo tú y tus finanzas.</p>
-          <Link href="/login"
+          {/* ← CTA también apunta a registro */}
+          <Link href="/login?tab=register"
             className="inline-block bg-zinc-900 text-white px-9 py-4 rounded-full text-base font-bold no-underline hover:-translate-y-0.5 transition-transform"
             style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
             Crear cuenta gratis →

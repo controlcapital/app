@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
   },
   verification: {
-    google: "PEGA_AQUI_TU_CODIGO_DE_GOOGLE", // ← reemplaza esto con el código de Search Console
+    google: process.env.CODIGO_VERIFICACION, // ← reemplaza esto con el código de Search Console
   },
 };
 
