@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
   },
   verification: {
-    google: process.env.CODIGO_VERIFICACION, // ← reemplaza esto con el código de Search Console
+    google: process.env.CODIGO_VERIFICACION,
   },
 };
 
@@ -79,11 +79,28 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
-        <GoogleAnalytics gaId="G-44CLSF01XV" />
+
+        {/* 1. Google Consent Mode v2 — debe ir primero */}
+        <Script id="google-consent-init" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied'
+            });
+          `}
+        </Script>
+
+        {/* 2. Iubenda — carga antes que GA para bloquear correctamente */}
         <Script
           src="https://embeds.iubenda.com/widgets/f2eefb2b-2006-4912-837f-5b410281e7b5.js"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
+
+        {/* 3. Google Analytics — arranca denegado hasta que iubenda dé el OK */}
+        <GoogleAnalytics gaId="G-44CLSF01XV" />
+
       </body>
     </html>
   )
