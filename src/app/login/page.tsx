@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/app/lib/supabase'
 import { useTheme } from '@/app/context/Theme.context'
 import Link from 'next/link'
@@ -14,6 +14,14 @@ export default function Login() {
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
   const { theme } = useTheme()
   const [rememberMe, setRememberMe] = useState(false)
+
+  // ← ÚNICO CAMBIO: lee ?tab=register desde window.location sin useSearchParams
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('tab') === 'register') {
+      setIsLogin(false)
+    }
+  }, [])
   
   const traducirError = (msg: string) => {
     const errores: { [key: string]: string } = {
@@ -39,6 +47,16 @@ export default function Login() {
       'duplicate key value violates unique constraint "user_pkey"': 'El valor de clave duplicado viola la restricción de unicidad "user_pkey".'
     }
     return errores[msg] ?? msg
+  }
+
+  const DOMINIOS_PERMITIDOS = [
+    'gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com',
+    'icloud.com', 'protonmail.com', 'live.com', 'msn.com'
+  ]
+
+  const validarEmail = (email: string): boolean => {
+    const dominio = email.split('@')[1]?.toLowerCase()
+    return DOMINIOS_PERMITIDOS.includes(dominio)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,6 +93,12 @@ export default function Login() {
 
       } else {
         // --- LÓGICA DE REGISTRO ---
+
+        // 0. Validar dominio de email
+        if (!validarEmail(email)) {
+          throw new Error('Por favor usa un correo electrónico válido (Gmail, Hotmail, Outlook...).')
+        }
+        
         
         // 1. Validaciones de contraseña (solo en registro)
         if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
@@ -281,7 +305,7 @@ export default function Login() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Juan Pérez"
-                    className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     required={!isLogin}
                     disabled={loading}
@@ -308,7 +332,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
-                  className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                  className="w-full pl-12 pr-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   required
                 />
@@ -333,7 +357,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
+                  className="w-full pl-12 pr-12 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   required
                 />
@@ -377,7 +401,7 @@ export default function Login() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-700 bg-black text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                    className="w-4 h-4 rounded border-zinc-700 bg-black text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
                     disabled={loading}
                   />
                   <span className="text-sm transition-colors" style={{ color: colors.textSecondary }}>
@@ -386,7 +410,7 @@ export default function Login() {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-sm text-blue-500 hover:text-blue-400 transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -430,7 +454,7 @@ export default function Login() {
           </div>
 
           {/* Botones sociales */}
-          <div className="flex justify-center"> {/* PARA PONER EL DE APPLE CAMBIAR POR 'grid grid-cols-2 gap-3' Y QUITAR 'PX-8' DEL BOTON DE GOOGLE*/}
+          <div className="flex justify-center">
             <button type="button"
               onClick={handleGoogleLogin}
               disabled={loading}
@@ -444,7 +468,7 @@ export default function Login() {
               </svg>
               <span className="font-medium">Google</span>
             </button>
-            
+
             {/*<button
               disabled={loading}
               className="flex items-center justify-center gap-2 py-3 border rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
@@ -455,6 +479,7 @@ export default function Login() {
               <span className="font-medium">Apple</span>
             </button>*/}
           </div>
+          
         </div>
       </div>
     </div>
