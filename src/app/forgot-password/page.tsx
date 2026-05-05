@@ -181,7 +181,7 @@ export default function ForgotPassword() {
               </p>
               <button
                 onClick={() => { setSent(false); setEmail(''); setMessage(null) }}
-                className="text-sm text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                className="text-sm text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
               >
                 Enviar de nuevo
               </button>

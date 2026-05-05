@@ -9,15 +9,17 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
 const CATEGORIAS = [
-  { value: 'nomina',      label: 'Nómina',                 emoji: '💼' },
-  { value: 'freelance',   label: 'Freelance',              emoji: '💻' },
-  { value: 'ventas',      label: 'Ventas',                 emoji: '🛍️' },
-  { value: 'dividendos',  label: 'Dividendos/Inversiones', emoji: '📈' },
-  { value: 'alquiler',    label: 'Alquiler',               emoji: '🏠' },
-  { value: 'regalo',      label: 'Regalo',                 emoji: '🎁' },
-  { value: 'reembolso',   label: 'Reembolso',              emoji: '↩️' },
-  { value: 'pension',     label: 'Pensión/Subsidio',       emoji: '🏛️' },
-  { value: 'otro',        label: 'Otro',                   emoji: '📦' },
+  { value: 'nomina', label: 'Nómina', emoji: '💼' },
+  { value: 'freelance', label: 'Freelance', emoji: '💻' },
+  { value: 'ventas', label: 'Ventas', emoji: '🛍️' },
+  { value: 'dividendos', label: 'Dividendos / Inversiones', emoji: '📈' },
+  { value: 'alquiler', label: 'Alquiler', emoji: '🏠' },
+  { value: 'bizum', label: 'Bizum', emoji: '💸' },
+  { value: 'reembolso', label: 'Reembolso', emoji: '↩️' },
+  { value: 'ingreso', label: 'Ingreso', emoji: '💰' },
+  { value: 'regalo', label: 'Regalo', emoji: '🎁' },
+  { value: 'pension', label: 'Pensión / Subsidio', emoji: '🏛️' },
+  { value: 'otro', label: 'Otro', emoji: '📦' },
 ]
 
 export default function EditIncomePage() {
@@ -111,7 +113,7 @@ export default function EditIncomePage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -174,7 +176,7 @@ export default function EditIncomePage() {
                     onChange={(e) => setDescripcion(e.target.value)}
                     placeholder="Ej: Salario mensual, Proyecto freelance..."
                     required
-                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   />
                 </div>
@@ -197,7 +199,7 @@ export default function EditIncomePage() {
                       step="0.01"
                       min="0"
                       required
-                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     />
                   </div>
@@ -213,7 +215,7 @@ export default function EditIncomePage() {
                       value={categoria}
                       onChange={(e) => setCategoria(e.target.value)}
                       required
-                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
+                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     >
                       <option value="" disabled>Selecciona una categoría</option>
@@ -250,7 +252,7 @@ export default function EditIncomePage() {
                       wrapperClassName="w-full"
                       customInput={
                         <input
-                          className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                          className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                           style={{
                             backgroundColor: colors.bgInput,
                             borderColor: colors.border,

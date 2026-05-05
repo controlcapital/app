@@ -246,7 +246,7 @@ export default function SettingsPage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -328,7 +328,7 @@ export default function SettingsPage() {
                       disabled={uploadingAvatar}
                     />
                     
-                    <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden border-2 group-hover:border-blue-500 transition-all relative"
+                    <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center overflow-hidden border-2 group-hover:border-violet-500 transition-all relative"
                          style={{ borderColor: colors.border }}>
                       {avatar ? (
                         <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
@@ -369,7 +369,7 @@ export default function SettingsPage() {
                         type="text"
                         value={fullname}
                         onChange={(e) => setFullname(e.target.value)}
-                        className="w-full px-4 py-3.5 border rounded-2xl focus:border-blue-500 outline-none transition-colors mt-2"
+                        className="w-full px-4 py-3.5 border rounded-2xl focus:border-violet-500 outline-none transition-colors mt-2"
                         style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                       />
                     </div>
@@ -426,7 +426,7 @@ export default function SettingsPage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="••••••••"
                       minLength={6}
-                      className="w-full px-4 py-3.5 pr-12 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full px-4 py-3.5 pr-12 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     />
                     <button
@@ -475,7 +475,7 @@ export default function SettingsPage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
                       minLength={6}
-                      className="w-full px-4 py-3.5 pr-12 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full px-4 py-3.5 pr-12 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     />
                     <button

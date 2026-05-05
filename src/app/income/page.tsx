@@ -6,29 +6,36 @@ import { supabase } from '@/app/lib/supabase'
 import Navbar from '@/app/components/navbar'
 import { useTheme } from '@/app/context/Theme.context'
 
-// Configuración de categorías
 const CATEGORIAS: { [key: string]: { label: string, emoji: string, color: string, bg: string, border: string } } = {
-  nomina:      { label: 'Nómina',                emoji: '💼', color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20' },
-  freelance:   { label: 'Freelance',             emoji: '💻', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
-  ventas:      { label: 'Ventas',                emoji: '🛍️', color: 'text-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
-  dividendos:  { label: 'Dividendos/Inversiones',emoji: '📈', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-  alquiler:    { label: 'Alquiler',              emoji: '🏠', color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20' },
-  regalo:      { label: 'Regalo',                emoji: '🎁', color: 'text-pink-400',   bg: 'bg-pink-500/10',   border: 'border-pink-500/20' },
-  reembolso:   { label: 'Reembolso',             emoji: '↩️', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
-  pension:     { label: 'Pensión/Subsidio',      emoji: '🏛️', color: 'text-gray-400',   bg: 'bg-gray-500/10',   border: 'border-gray-500/20' },
-  otro:        { label: 'Otro',                  emoji: '📦', color: 'text-gray-400',   bg: 'bg-gray-500/10',   border: 'border-gray-500/20' },
+  // Trabajo
+  nomina:      { label: 'Nómina',                 emoji: '💼', color: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20' },   // #60a5fa — azul corporativo
+  freelance:   { label: 'Freelance',              emoji: '💻', color: 'text-violet-400',  bg: 'bg-violet-500/10',  border: 'border-violet-500/20' }, // #a78bfa — violeta creativo
+  ventas:      { label: 'Ventas',                 emoji: '🛍️', color: 'text-green-400',   bg: 'bg-green-500/10',   border: 'border-green-500/20' },  // #4ade80 — verde dinero
+  // Inversiones y rentas
+  dividendos:  { label: 'Dividendos/Inversiones', emoji: '📈', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },// #34d399 — verde crecimiento
+  alquiler:    { label: 'Alquiler',               emoji: '🏠', color: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/20' },  // #fbbf24 — ámbar propiedad
+  // Transferencias y pagos recibidos
+  bizum:       { label: 'Bizum',                  emoji: '💸', color: 'text-cyan-400',    bg: 'bg-cyan-500/10',    border: 'border-cyan-500/20' },   // #22d3ee — cyan digital
+  reembolso:   { label: 'Reembolso',              emoji: '↩️', color: 'text-sky-400',     bg: 'bg-sky-500/10',     border: 'border-sky-500/20' },    // #38bdf8 — azul cielo devolución
+  // Otros ingresos
+  ingreso:     { label: 'Ingreso',                emoji: '💰', color: 'text-yellow-400',  bg: 'bg-yellow-500/10',  border: 'border-yellow-500/20' }, // #facc15 — amarillo oro
+  regalo:      { label: 'Regalo',                 emoji: '🎁', color: 'text-pink-400',    bg: 'bg-pink-500/10',    border: 'border-pink-500/20' },   // #f472b6 — rosa celebración
+  pension:     { label: 'Pensión/Subsidio',       emoji: '🏛️', color: 'text-slate-400',   bg: 'bg-slate-500/10',   border: 'border-slate-500/20' },  // #94a3b8 — gris institucional
+  otro:        { label: 'Otro',                   emoji: '📦', color: 'text-zinc-400',    bg: 'bg-zinc-500/10',    border: 'border-zinc-500/20' },   // #a1a1aa — zinc neutro
 }
 
 const ICON_COLORS: { [key: string]: string } = {
-  nomina:     'from-blue-500 to-blue-600',
-  freelance:  'from-purple-500 to-blue-600',
-  ventas:     'from-green-500 to-emerald-600',
-  dividendos: 'from-orange-500 to-amber-600',
-  alquiler:   'from-cyan-500 to-teal-600',
-  regalo:     'from-pink-500 to-rose-600',
-  reembolso:  'from-yellow-500 to-amber-600',
-  pension:    'from-gray-500 to-gray-600',
-  otro:       'from-gray-500 to-gray-600',
+  nomina:     'from-blue-500 to-blue-600',       // #3b82f6 → #2563eb
+  freelance:  'from-violet-500 to-purple-600',   // #8b5cf6 → #9333ea
+  ventas:     'from-green-500 to-emerald-600',   // #22c55e → #059669
+  dividendos: 'from-emerald-400 to-emerald-600', // #34d399 → #059669
+  alquiler:   'from-amber-400 to-amber-600',     // #fbbf24 → #d97706
+  bizum:      'from-cyan-400 to-cyan-600',       // #22d3ee → #0891b2
+  reembolso:  'from-sky-400 to-sky-600',         // #38bdf8 → #0284c7
+  ingreso:    'from-yellow-400 to-amber-500',    // #facc15 → #f59e0b
+  regalo:     'from-pink-400 to-rose-500',       // #f472b6 → #f43f5e
+  pension:    'from-slate-400 to-slate-600',     // #94a3b8 → #475569
+  otro:       'from-zinc-500 to-zinc-600',       // #71717a → #52525b
 }
 
 interface Income {
@@ -57,7 +64,10 @@ export default function IncomeTable() {
   const [paginaActual, setPaginaActual] = useState(1)
   const ITEMS_POR_PAGINA = 4
 
-  // Colores dinámicos
+  // ── NUEVO: estado modal eliminar ──
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
   const colors = {
     bg: theme === 'light' ? '#ffffff' : '#000000',
     bgCard: theme === 'light' ? '#f4f4f5' : '#18181b',
@@ -69,9 +79,7 @@ export default function IncomeTable() {
     skeleton: theme === 'light' ? '#e4e4e7' : '#27272a',
   }
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -131,15 +139,16 @@ export default function IncomeTable() {
     setLoadingData(false)
   }
 
+  // ── MODIFICADO: handleDelete usa el modal ──
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Seguro que quieres eliminar este ingreso?')) return
-
     const { error } = await supabase
       .from('income')
       .delete()
       .eq('id', id)
 
     if (!error) {
+      setShowDeleteModal(false)
+      setDeletingId(null)
       fetchIncomes()
     }
   }
@@ -150,9 +159,7 @@ export default function IncomeTable() {
     paginaActual * ITEMS_POR_PAGINA
   )
 
-  useEffect(() => {
-    setPaginaActual(1)
-  }, [activeFilter])
+  useEffect(() => { setPaginaActual(1) }, [activeFilter])
 
   const calcularStats = () => {
     const ahora = new Date()
@@ -178,39 +185,26 @@ export default function IncomeTable() {
 
     const promedio = incomes.length > 0 ? total / incomes.length : 0
 
-    return {
-      total,
-      totalMesActual,
-      transaccionesMes: ingresosMesActual.length,
-      promedio,
-      porcentaje,
-    }
+    return { total, totalMesActual, transaccionesMes: ingresosMesActual.length, promedio, porcentaje }
   }
 
   const stats = calcularStats()
 
-  const formatEuro = (num: number) => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(num)
-  }
+  const formatEuro = (num: number) => new Intl.NumberFormat('es-ES', {
+    style: 'currency', currency: 'EUR',
+    minimumFractionDigits: 0, maximumFractionDigits: 2,
+  }).format(num)
 
-  const formatFecha = (fecha: string) => {
-    return new Date(fecha).toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'short'
-    })
-  }
+  const formatFecha = (fecha: string) => new Date(fecha).toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'short'
+  })
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -221,13 +215,13 @@ export default function IncomeTable() {
 
   return (
     <div className="min-h-screen flex transition-colors duration-300" style={{ backgroundColor: colors.bg }}>
-      
+
       <Navbar />
 
       <main className="flex-1 ml-20 lg:ml-64 overflow-hidden">
         <div className="p-3 md:p-6">
           <div className="max-w-7xl mx-auto">
-            
+
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-8">
@@ -239,8 +233,8 @@ export default function IncomeTable() {
                     {mounted && new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })}
                   </p>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => router.push('/income/add')}
                   className="flex items-center gap-2 px-5 py-3 rounded-full font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer"
                   style={{
@@ -255,7 +249,7 @@ export default function IncomeTable() {
                 </button>
               </div>
 
-              {/* Stats dinámicas */}
+              {/* Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="rounded-3xl p-6 border transition-colors"
                      style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
@@ -270,7 +264,7 @@ export default function IncomeTable() {
                     <span style={{ color: colors.textSecondary }}>vs. mes anterior</span>
                   </div>
                 </div>
-                
+
                 <div className="rounded-3xl p-6 border transition-colors"
                      style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
                   <p className="text-sm mb-3" style={{ color: colors.textSecondary }}>Este mes</p>
@@ -281,7 +275,7 @@ export default function IncomeTable() {
                     {stats.transaccionesMes} transacciones
                   </p>
                 </div>
-                
+
                 <div className="rounded-3xl p-6 border transition-colors"
                      style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
                   <p className="text-sm mb-3" style={{ color: colors.textSecondary }}>Promedio</p>
@@ -295,8 +289,6 @@ export default function IncomeTable() {
 
             {/* Filtros */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-              
-              {/* Buscador */}
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <svg className="w-5 h-5" style={{ color: colors.textSecondary }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,11 +301,7 @@ export default function IncomeTable() {
                   onChange={(e) => setBusqueda(e.target.value)}
                   placeholder="Buscar ingresos..."
                   className="w-full pl-11 pr-4 py-3 border rounded-2xl placeholder-gray-500 focus:outline-none transition-colors"
-                  style={{ 
-                    backgroundColor: colors.bgCard, 
-                    borderColor: colors.border, 
-                    color: colors.text 
-                  }}
+                  style={{ backgroundColor: colors.bgCard, borderColor: colors.border, color: colors.text }}
                 />
                 {busqueda && (
                   <button
@@ -328,21 +316,14 @@ export default function IncomeTable() {
                 )}
               </div>
 
-              {/* Desplegable categoría */}
               <div className="relative">
                 <select
                   value={categoriaFiltro}
                   onChange={(e) => setCategoriaFiltro(e.target.value)}
                   className="w-full sm:w-52 px-4 py-3 border rounded-2xl focus:outline-none transition-colors appearance-none cursor-pointer pr-10"
-                  style={{ 
-                    backgroundColor: colors.bgCard, 
-                    borderColor: colors.border, 
-                    color: colors.text 
-                  }}
+                  style={{ backgroundColor: colors.bgCard, borderColor: colors.border, color: colors.text }}
                 >
-                  <option value="todos" style={{ backgroundColor: colors.bgCard }}>
-                    Todas las categorías
-                  </option>
+                  <option value="todos" style={{ backgroundColor: colors.bgCard }}>Todas las categorías</option>
                   {Object.entries(CATEGORIAS).map(([key, cat]) => (
                     <option key={key} value={key} style={{ backgroundColor: colors.bgCard }}>
                       {cat.emoji} {cat.label}
@@ -356,17 +337,12 @@ export default function IncomeTable() {
                 </div>
               </div>
 
-              {/* Desplegable mes */}
               <div className="relative">
                 <select
                   value={mesFiltro}
                   onChange={(e) => setMesFiltro(e.target.value)}
                   className="w-full sm:w-44 px-4 py-3 border rounded-2xl focus:outline-none transition-colors appearance-none cursor-pointer pr-10"
-                  style={{ 
-                    backgroundColor: colors.bgCard, 
-                    borderColor: colors.border, 
-                    color: colors.text 
-                  }}
+                  style={{ backgroundColor: colors.bgCard, borderColor: colors.border, color: colors.text }}
                 >
                   <option value="este_mes" style={{ backgroundColor: colors.bgCard }}>Este mes</option>
                   <option value="mes_anterior" style={{ backgroundColor: colors.bgCard }}>Mes anterior</option>
@@ -388,7 +364,7 @@ export default function IncomeTable() {
                   <div key={i} className="rounded-3xl p-5 border animate-pulse"
                        style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl flex-shrink-0" 
+                      <div className="w-12 h-12 rounded-2xl flex-shrink-0"
                            style={{ backgroundColor: colors.skeleton }} />
                       <div className="flex-1 space-y-2">
                         <div className="h-4 rounded w-1/3" style={{ backgroundColor: colors.skeleton }} />
@@ -426,7 +402,7 @@ export default function IncomeTable() {
                   const iconColor = ICON_COLORS[income.category] || ICON_COLORS['otro']
 
                   return (
-                    <div key={income.id} 
+                    <div key={income.id}
                       className="relative rounded-3xl p-4 border transition-all duration-200 group"
                       style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
                       <div className="flex items-center gap-4">
@@ -454,8 +430,8 @@ export default function IncomeTable() {
                             </span>
                           </div>
                         </div>
-                        
-                        {/* Botones */}
+
+                        {/* Botones — MODIFICADO: eliminar abre modal */}
                         <div className="flex items-center gap-3 flex-shrink-0">
                           <div className="flex flex-col gap-2">
                             <button
@@ -465,12 +441,12 @@ export default function IncomeTable() {
                               title="Editar"
                             >
                               <svg className="w-4 h-4" style={{ color: colors.textSecondary }}
-                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
                             <button
-                              onClick={() => handleDelete(income.id)}
+                              onClick={() => { setDeletingId(income.id); setShowDeleteModal(true) }}
                               className="w-8 h-7 rounded-xl border hover:bg-red-500/10 hover:border-red-900 transition-all duration-200 flex items-center justify-center cursor-pointer"
                               style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}
                               title="Eliminar"
@@ -491,16 +467,12 @@ export default function IncomeTable() {
             {/* Paginación */}
             {totalPaginas > 1 && (
               <div className="flex flex-col items-center gap-3 mt-8 pb-6">
-                
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPaginaActual(p => Math.max(1, p - 1))}
                     disabled={paginaActual === 1}
                     className="w-10 h-10 rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                    style={{ 
-                      backgroundColor: colors.bgCard, 
-                      color: colors.textSecondary 
-                    }}
+                    style={{ backgroundColor: colors.bgCard, color: colors.textSecondary }}
                   >
                     <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -513,7 +485,7 @@ export default function IncomeTable() {
                       onClick={() => setPaginaActual(pagina)}
                       className="w-10 h-10 rounded-full font-semibold transition-colors cursor-pointer"
                       style={{
-                        backgroundColor: paginaActual === pagina 
+                        backgroundColor: paginaActual === pagina
                           ? (theme === 'light' ? '#000000' : '#ffffff')
                           : colors.bgCard,
                         color: paginaActual === pagina
@@ -529,10 +501,7 @@ export default function IncomeTable() {
                     onClick={() => setPaginaActual(p => Math.min(totalPaginas, p + 1))}
                     disabled={paginaActual === totalPaginas}
                     className="w-10 h-10 rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                    style={{ 
-                      backgroundColor: colors.bgCard, 
-                      color: colors.textSecondary 
-                    }}
+                    style={{ backgroundColor: colors.bgCard, color: colors.textSecondary }}
                   >
                     <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -543,13 +512,44 @@ export default function IncomeTable() {
                 <p className="text-sm" style={{ color: colors.textSecondary }}>
                   Mostrando {((paginaActual - 1) * ITEMS_POR_PAGINA) + 1} - {Math.min(paginaActual * ITEMS_POR_PAGINA, filteredIncomes.length)} de {filteredIncomes.length} ingresos
                 </p>
-
               </div>
             )}
 
           </div>
         </div>
       </main>
+
+      {/* ── Modal confirmar eliminar ── */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+             style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="w-full max-w-sm rounded-3xl p-6 border"
+               style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
+            <h2 className="text-xl font-bold mb-2" style={{ color: colors.text }}>
+              Eliminar ingreso
+            </h2>
+            <p className="text-sm mb-6" style={{ color: colors.textSecondary }}>
+              ¿Seguro que quieres eliminar este ingreso? Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeletingId(null) }}
+                className="flex-1 py-3 rounded-2xl font-semibold cursor-pointer text-sm"
+                style={{ backgroundColor: colors.bgCard, color: colors.text }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => deletingId && handleDelete(deletingId)}
+                className="flex-1 py-3 rounded-2xl font-semibold cursor-pointer text-sm bg-red-500/10 border border-red-500/20 text-red-400"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

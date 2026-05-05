@@ -12,14 +12,21 @@ const CATEGORIAS = [
   { value: 'vivienda',      label: 'Vivienda',      emoji: '🏠' },
   { value: 'suministros',   label: 'Suministros',   emoji: '💡' },
   { value: 'alimentacion',  label: 'Alimentación',  emoji: '🛒' },
-  { value: 'ocio',          label: 'Ocio',          emoji: '🎉' },
-  { value: 'suscripciones', label: 'Suscripciones', emoji: '📱' },
   { value: 'transporte',    label: 'Transporte',    emoji: '🚗' },
+  { value: 'seguros',       label: 'Seguros',       emoji: '🛡️' },
+
   { value: 'salud',         label: 'Salud',         emoji: '❤️' },
   { value: 'deporte',       label: 'Deporte',       emoji: '🏋️' },
-  { value: 'mascotas',      label: 'Mascotas',      emoji: '🐾' },
-  { value: 'estética',      label: 'Estética',      emoji: '💇🏻‍♂️' },
+  { value: 'estetica',      label: 'Estética',      emoji: '💇🏻‍♂️' },
+
+  { value: 'ocio',          label: 'Ocio',          emoji: '🎉' },
+  { value: 'suscripciones', label: 'Suscripciones', emoji: '📱' },
   { value: 'moda',          label: 'Moda',          emoji: '👚' },
+  { value: 'mascotas',      label: 'Mascotas',      emoji: '🐾' },
+
+  { value: 'bizum',         label: 'Bizum',         emoji: '💸' },
+  { value: 'ingreso',       label: 'Ingreso',       emoji: '💰' },
+
   { value: 'otro',          label: 'Otro',          emoji: '📦' },
 ]
 
@@ -150,7 +157,7 @@ export default function EditExpensePage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -213,7 +220,7 @@ export default function EditExpensePage() {
                     onChange={(e) => setDescripcion(e.target.value)}
                     placeholder="Ej: Alquiler, Supermercado, Netflix..."
                     required
-                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-3.5 border rounded-2xl placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   />
                 </div>
@@ -236,7 +243,7 @@ export default function EditExpensePage() {
                       step="0.01"
                       min="0"
                       required
-                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full pl-10 pr-4 py-3.5 border rounded-2xl text-lg font-semibold placeholder-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     />
                   </div>
@@ -252,7 +259,7 @@ export default function EditExpensePage() {
                       value={categoria}
                       onChange={(e) => setCategoria(e.target.value)}
                       required
-                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
+                      className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
                       style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                     >
                       <option value="" disabled>Selecciona una categoría</option>
@@ -289,7 +296,7 @@ export default function EditExpensePage() {
                       wrapperClassName="w-full"
                       customInput={
                         <input
-                          className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                          className="w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                           style={{
                             backgroundColor: colors.bgInput,
                             borderColor: colors.border,
@@ -338,7 +345,7 @@ export default function EditExpensePage() {
                         value={metodoPago}
                         onChange={(e) => setMetodoPago(e.target.value)}
                         required
-                        className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
+                        className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
                         style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                       >
                         <option value="" disabled>Selecciona</option>
@@ -364,7 +371,7 @@ export default function EditExpensePage() {
                       <select
                         value={frecuencia}
                         onChange={(e) => setFrecuencia(e.target.value)}
-                        className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
+                        className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors appearance-none cursor-pointer"
                         style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                       >
                         {FRECUENCIAS.map((f) => (

@@ -57,12 +57,6 @@ export default function savingPage() {
   const [editDeadline, setEditDeadline] = useState('')
   const [savingEdit, setSavingEdit] = useState(false)
 
-  //estados para retirar
-
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
-  const [withdrawAmount, setWithdrawAmount] = useState('')
-  const [savingWithdraw, setSavingWithdraw] = useState(false)
-
   const colors = {
     bg: theme === 'light' ? '#ffffff' : '#000000',
     bgCard: theme === 'light' ? '#f4f4f5' : '#18181b',
@@ -172,8 +166,6 @@ export default function savingPage() {
         saving_id: selectedSaving.id,
         user_id: user?.id,
         amount,
-        updated_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
       }]),
       supabase.from('saving').update({
         current_amount: newAmount,
@@ -189,41 +181,6 @@ export default function savingPage() {
       fetchData()
     }
     setSavingContrib(false)
-  }
-
-  const handleWithdraw = async () => {
-    if (!selectedSaving || !withdrawAmount) return
-    const amount = Number(withdrawAmount)
-    if (amount <= 0) return
-    if (amount > selectedSaving.current_amount) return alert('No puedes retirar más de lo aportado')
-
-    setSavingWithdraw(true)
-
-    const newAmount = selectedSaving.current_amount - amount
-    const completed = newAmount >= selectedSaving.target_amount
-
-    const [{ error: contribError }, { error: savingError }] = await Promise.all([
-      supabase.from('saving_contribution').insert([{
-        saving_id: selectedSaving.id,
-        user_id: user?.id,
-        amount: -amount,
-        updated_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      }]),
-      supabase.from('saving').update({
-        current_amount: newAmount,
-        completed,
-        updated_at: new Date().toISOString(),
-      }).eq('id', selectedSaving.id),
-    ])
-
-    if (!contribError && !savingError) {
-      setShowWithdrawModal(false)
-      setWithdrawAmount('')
-      setSelectedSaving(null)
-      fetchData()
-    }
-    setSavingWithdraw(false)
   }
 
   const handleDelete = async (id: string) => {
@@ -254,7 +211,7 @@ export default function savingPage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
            style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
@@ -393,7 +350,7 @@ export default function savingPage() {
                             {/* Header card */}
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl flex-shrink-0">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl flex-shrink-0">
                                   {saving.emoji}
                                 </div>
                                 <div className="min-w-0">
@@ -419,7 +376,7 @@ export default function savingPage() {
                                     setEditDeadline(saving.deadline ? saving.deadline.split('T')[0] : '')
                                     setShowEditModal(true)
                                   }}
-                                  className="w-8 h-7 rounded-xl border transition-all duration-200 flex items-center justify-center cursor-pointer hover:border-blue-500"
+                                  className="w-8 h-7 rounded-xl border transition-all duration-200 flex items-center justify-center cursor-pointer hover:border-violet-500"
                                   style={{ backgroundColor: colors.bg, borderColor: colors.border }}
                                   title="Editar"
                                 >
@@ -459,7 +416,7 @@ export default function savingPage() {
                             <div className="h-2 rounded-full mb-4 overflow-hidden"
                                  style={{ backgroundColor: theme === 'light' ? '#e4e4e7' : '#27272a' }}>
                               <div
-                                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-blue-500 to-purple-600"
+                                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-violet-500 to-purple-600"
                                 style={{ width: `${porcentaje}%` }}
                               />
                             </div>
@@ -469,31 +426,19 @@ export default function savingPage() {
                               <p className="text-xs" style={{ color: colors.textSecondary }}>
                                 Faltan {formatEuro(restante)}
                               </p>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => { setSelectedSaving(saving); setShowWithdrawModal(true) }}
-                                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm hover:scale-105 transition-transform cursor-pointer"
-                                  style={{ backgroundColor: colors.buttonSecondary, color: colors.text }}
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
-                                  </svg>
-                                  Retirar
-                                </button>
-                                <button
-                                  onClick={() => { setSelectedSaving(saving); setShowContribModal(true) }}
-                                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm hover:scale-105 transition-transform cursor-pointer"
-                                  style={{
-                                    backgroundColor: theme === 'light' ? '#000000' : '#ffffff',
-                                    color: theme === 'light' ? '#ffffff' : '#000000'
-                                  }}
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                  </svg>
-                                  Aportar
-                                </button>
-                              </div>
+                              <button
+                                onClick={() => { setSelectedSaving(saving); setShowContribModal(true) }}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm hover:scale-105 transition-transform cursor-pointer"
+                                style={{
+                                  backgroundColor: theme === 'light' ? '#000000' : '#ffffff',
+                                  color: theme === 'light' ? '#ffffff' : '#000000'
+                                }}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                                </svg>
+                                Aportar
+                              </button>
                             </div>
                           </div>
                         )
@@ -593,7 +538,7 @@ export default function savingPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Ej: Viaje a Japón"
-                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                 />
               </div>
@@ -611,7 +556,7 @@ export default function savingPage() {
                     value={newTarget}
                     onChange={(e) => setNewTarget(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   />
                 </div>
@@ -626,7 +571,7 @@ export default function savingPage() {
                   type="date"
                   value={newDeadline}
                   onChange={(e) => setNewDeadline(e.target.value)}
-                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                   style={{
                     backgroundColor: colors.bgInput,
                     borderColor: colors.border,
@@ -668,7 +613,7 @@ export default function savingPage() {
           <div className="w-full max-w-md rounded-3xl p-6 border"
                style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl">
                 {selectedSaving.emoji}
               </div>
               <div>
@@ -697,7 +642,7 @@ export default function savingPage() {
                   value={contribAmount}
                   onChange={(e) => setContribAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                 />
               </div>
@@ -724,71 +669,6 @@ export default function savingPage() {
                 }}
               >
                 {savingContrib ? 'Aportando...' : 'Aportar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal retirar */}
-      {showWithdrawModal && selectedSaving && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="w-full max-w-md rounded-3xl p-6 border"
-              style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl">
-                {selectedSaving.emoji}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold" style={{ color: colors.text }}>Retirar dinero</h2>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>{selectedSaving.name}</p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl p-4 mb-4 border"
-                style={{ backgroundColor: colors.bgCard, borderColor: colors.border }}>
-              <p className="text-xs mb-1" style={{ color: colors.textSecondary }}>Dinero aportado</p>
-              <p className="text-2xl font-bold" style={{ color: colors.text }}>
-                {formatEuro(selectedSaving.current_amount)}
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                Importe a retirar
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-4 flex items-center font-medium"
-                      style={{ color: colors.textSecondary }}>€</span>
-                <input
-                  type="number"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                  placeholder="0"
-                  className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
-                  style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
-                />
-              </div>
-              {Number(withdrawAmount) > selectedSaving.current_amount && (
-                <p className="text-xs text-red-400 mt-1">No puedes retirar más de lo aportado</p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowWithdrawModal(false); setWithdrawAmount(''); setSelectedSaving(null) }}
-                className="flex-1 py-3 rounded-2xl font-semibold transition-colors cursor-pointer text-sm md:text-base"
-                style={{ backgroundColor: colors.buttonSecondary, color: colors.text }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleWithdraw}
-                disabled={savingWithdraw || !withdrawAmount || Number(withdrawAmount) <= 0 || Number(withdrawAmount) > selectedSaving.current_amount}
-                className="flex-1 py-3 rounded-2xl font-semibold transition-colors cursor-pointer disabled:opacity-50 text-sm md:text-base bg-red-500/10 border border-red-500/20 text-red-400"
-              >
-                {savingWithdraw ? 'Retirando...' : 'Retirar'}
               </button>
             </div>
           </div>
@@ -859,7 +739,7 @@ export default function savingPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                   style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                 />
               </div>
@@ -873,7 +753,7 @@ export default function savingPage() {
                     type="number"
                     value={editTarget}
                     onChange={(e) => setEditTarget(e.target.value)}
-                    className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full pl-8 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                     style={{ backgroundColor: colors.bgInput, borderColor: colors.border, color: colors.text }}
                   />
                 </div>
@@ -886,7 +766,7 @@ export default function savingPage() {
                   type="date"
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
-                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3.5 border rounded-2xl focus:outline-none focus:border-violet-500 transition-colors"
                   style={{
                     backgroundColor: colors.bgInput,
                     borderColor: colors.border,

@@ -11,24 +11,47 @@ import {
 } from 'recharts'
 
 const CATEGORIA_COLORES: { [key: string]: string } = {
-  vivienda:      '#6366f1',
-  suministros:   '#f59e0b',
-  alimentacion:  '#10b981',
-  ocio:          '#ec4899',
-  suscripciones: '#8b5cf6',
-  transporte:    '#06b6d4',
+  vivienda:      '#3b82f6',
+  suministros:   '#fb923c',
+  alimentacion:  '#22c55e',
+  transporte:    '#64748b',
+  seguros:       '#38bdf8',
+  
   salud:         '#ef4444',
-  otro:          '#6b7280',
+  deporte:       '#84cc16',
+  estetica:      '#f472b6',
+  
+  ocio:          '#fb923c',
+  
+  suscripciones: '#8b5cf6',
+  moda:          '#fb7185',
+  mascotas:      '#7c2d12',
+
+  bizum:         '#22d3ee',
+  ingreso:       '#facc15',
+  
+  otro:          '#71717a',
 }
 
 const CATEGORIA_LABELS: { [key: string]: string } = {
   vivienda:      '🏠 Vivienda',
   suministros:   '💡 Suministros',
   alimentacion:  '🛒 Alimentación',
+  transporte:    '🚗 Transporte',
+  seguros:       '🛡️ Seguros',
+  
+  salud:         '❤️ Salud',
+  deporte:       '🏋️ Deporte',
+  estetica:      '💇🏻‍♂️ Estética',
+  
   ocio:          '🎉 Ocio',
   suscripciones: '📱 Suscripciones',
-  transporte:    '🚗 Transporte',
-  salud:         '❤️ Salud',
+  moda:          '👚 Moda',
+  mascotas:      '🐾 Mascotas',
+
+  bizum:         '💸 Bizum',
+  ingreso:       '💰 Ingreso',
+
   otro:          '📦 Otro',
 }
 
@@ -70,7 +93,7 @@ export default function DashboardPage() {
 
   const formatEuro = (num: number) => new Intl.NumberFormat('es-ES', {
     style: 'currency', currency: 'EUR',
-    minimumFractionDigits: 0, maximumFractionDigits: 0,
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
   }).format(num)
 
   const totalIngresos = incomes.reduce((sum, i) => sum + Number(i.amount), 0)
@@ -143,7 +166,7 @@ export default function DashboardPage() {
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
           style={{ backgroundColor: colors.bg }}>
         <div className="text-center space-y-3">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p style={{ color: colors.textSecondary }}>Cargando...</p>
         </div>
       </div>
