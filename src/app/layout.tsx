@@ -1,33 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { GoogleAnalytics } from '@next/third-parties/google'
-import Script from 'next/script'
+import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from 'next/script';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// ── CONFIGURACIÓN DE FUENTE ──
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
+// ── METADATOS UNIFICADOS CON LA LANDING ──
 export const metadata: Metadata = {
   title: {
-    default: "Control Capital — Gestiona tus finanzas personales gratis",
+    default: "Control Capital — Gestiona la economía de tu hogar",
     template: "%s | Control Capital",
   },
-  description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. App de finanzas personales gratuita y sin publicidad.",
+  description: "Descubre dónde va tu dinero y optimiza el presupuesto de tu casa. La herramienta definitiva para alcanzar vuestras metas de ahorro en común.",
   keywords: [
     "finanzas personales",
     "control de gastos",
     "app ahorro",
     "gestión dinero",
     "presupuesto personal",
-    "app finanzas gratis",
+    "finanzas hogar",
     "controlar gastos mensuales",
     "ahorrar dinero",
     "gestión presupuesto",
@@ -45,8 +43,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Control Capital — Gestiona tus finanzas personales gratis",
-    description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
+    title: "Control Capital — Gestiona la economía de tu hogar",
+    description: "Descubre dónde va tu dinero y optimiza el presupuesto de tu casa. La herramienta definitiva para alcanzar vuestras metas de ahorro en común.",
     url: "https://controlcapital.es",
     siteName: "Control Capital",
     locale: "es_ES",
@@ -54,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Control Capital — Gestiona tus finanzas personales gratis",
-    description: "Controla tus ingresos, gastos y metas de ahorro desde cualquier dispositivo. Gratis y sin publicidad.",
+    title: "Control Capital — Gestiona la economía de tu hogar",
+    description: "Descubre dónde va tu dinero y optimiza el presupuesto de tu casa. La herramienta definitiva para alcanzar vuestras metas de ahorro en común.",
   },
   verification: {
     google: process.env.CODIGO_VERIFICACION,
@@ -68,14 +66,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="es" suppressHydrationWarning>
+      <body
+        className={`${inter.className} antialiased`}
+        suppressHydrationWarning
+      >
         <Providers>
           {children}
         </Providers>
@@ -103,5 +98,5 @@ export default function RootLayout({
 
       </body>
     </html>
-  )
+  );
 }
