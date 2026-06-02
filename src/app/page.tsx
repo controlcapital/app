@@ -55,7 +55,7 @@ export default function Home() {
             Iniciar sesión
           </Link>
           <Link href="/login?tab=register" 
-            className="bg-white text-black px-4 py-2 rounded-full hover:bg-zinc-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] no-underline">
+            className="bg-white text-black px-4 py-2 rounded-lg hover:bg-zinc-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] no-underline">
             Entrar Gratis
           </Link>
         </div>
@@ -86,7 +86,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
           <Link href="/login?tab=register"
-            className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-black bg-white rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.3)] no-underline w-full sm:w-auto">
+            className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-black bg-white rounded-xl overflow-hidden transition-all hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.3)] no-underline w-full sm:w-auto">
             <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-emerald-400 rounded-full group-hover:w-56 group-hover:h-56"></span>
             <span className="relative flex items-center gap-2">
               Empezar gratis
@@ -188,7 +188,7 @@ export default function Home() {
           </h2>
           <p className="text-zinc-400 mb-10 text-lg font-light">Miles de personas ya controlan su dinero. Tú puedes ser la siguiente.</p>
           <Link href="/login?tab=register"
-            className="inline-block bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-10 py-5 rounded-full text-lg font-bold shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_50px_rgba(16,185,129,0.6)] hover:scale-105 transition-all duration-300 no-underline">
+            className="inline-block bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-10 py-5 rounded-xl text-lg font-bold shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_50px_rgba(16,185,129,0.6)] hover:scale-105 transition-all duration-300 no-underline">
             Empieza a ahorrar ahora
           </Link>
         
