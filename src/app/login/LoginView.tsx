@@ -54,7 +54,7 @@ export default function LoginView() {
           <span className="font-bold" style={{ color: colors.text }}>Control Capital</span>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md mt-24 lg:mt-0">
           
           {/* 🌟 PANTALLA DE ÉXITO (Registro completado) */}
           {isSuccessScreen ? (
